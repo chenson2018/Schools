@@ -184,7 +184,9 @@ Module universe_is_not_a_set.
 
   Definition not_isaset_UU : ¬ isaset UU.
   Proof.
-    apply fill_me.
+    intros ne.
+    apply no_path_weq_negb_idweq.
+    apply (isaset_UU_gives_path_weq_negb_idweq ne).
   Defined.
 
 End universe_is_not_a_set.
