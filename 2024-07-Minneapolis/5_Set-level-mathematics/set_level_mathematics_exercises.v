@@ -31,33 +31,31 @@ Definition bool_to_type : bool -> UU
 (** Show that there is no path from [true] to [false]. *)
 Theorem no_path_from_true_to_false : true != false.
 Proof.
-  apply fill_me.
+  exact nopathstruetofalse.
 Defined.
 
 (** Show that there is no path from [false] to [true]. *)
 Theorem no_path_from_false_to_true : false != true.
 Proof.
-  apply fill_me.
+  exact nopathsfalsetotrue.
 Defined.
 
 (** Construct decidable equality on [bool]. *)
 Theorem isdeceqbool : isdeceq bool.
 Proof.
-  unfold isdeceq. intros x' x. induction x.
-  - induction x'.
-    + unfold decidable.
-      apply fill_me.
-    + apply fill_me.
-  - induction x'.
-    + apply fill_me.
-    + apply fill_me.
+  unfold isdeceq. intros x' x. induction x; induction x'; unfold decidable.
+  - left. reflexivity.
+  - right. exact no_path_from_false_to_true.
+  - right. exact no_path_from_true_to_false.
+  - left. reflexivity.
 Defined.
 
 Check isasetifdeceq.
 
 Theorem isaset_bool : isaset bool.
 Proof.
-  apply fill_me.
+  apply isasetifdeceq.
+  apply isdeceqbool.
 Defined.
 
 (** * [nat] is a set *)
@@ -71,12 +69,15 @@ Definition nat_to_type : nat -> UU
 
 Lemma no_path_from_zero_to_successor (x : nat) : 0 != S x.
 Proof.
-  apply fill_me.
+  intros h.
+  apply (transportf nat_to_type h tt).
 Defined.
 
 Lemma no_path_from_successor_to_zero (x : nat) : S x != 0.
 Proof.
-  apply fill_me.
+  intros h.
+  symmetry in h.
+  apply (transportf nat_to_type h tt).
 Defined.
 
 (** Define a predecessor function on [nat]:
@@ -88,7 +89,8 @@ Definition predecessor : nat -> nat
 
 Lemma invmaponpathsS (n m : nat) : S n = S m -> n = m.
 Proof.
-  apply fill_me.
+  intros h.
+  apply (maponpaths predecessor h).
 Defined.
 
 (** The following constant will be useful for the next lemma. *)
@@ -96,17 +98,30 @@ Check @negf.
 
 Lemma noeqinjS (x x' : nat) : x != x' -> S x != S x'.
 Proof.
-  apply fill_me.
+  intros h.
+  exact (negf (invmaponpathsS x x') h).
 Defined.
 
 Theorem isdeceqnat : isdeceq nat.
 Proof.
-  apply fill_me.
-Defined.
+  intros x.
+  induction x; unfold decidable.
+  - induction x'.
+    + left. reflexivity.
+    + right. apply no_path_from_zero_to_successor.
+  - induction x'.
+    + right. apply no_path_from_successor_to_zero.
+    + case IHx with x'; intros h.
+      * left. rewrite h. reflexivity.
+      * right.
+        apply noeqinjS.
+        exact h.
+Qed.
 
 Lemma isasetnat : isaset nat.
 Proof.
-  apply fill_me.
+  apply isasetifdeceq.
+  apply isdeceqnat.
 Defined.
 
 (** * Functions in sets *)
@@ -116,12 +131,14 @@ Definition is_injective {X Y : hSet} (f : X -> Y) : UU
 
 (* This is a useful lemma for checking that dependent function types are propositions or sets *)
 Check impred.
-
+  
 Lemma isaprop_is_injective {X Y : hSet} (f : X -> Y)
   : isaprop (is_injective f).
 Proof.
-  apply fill_me.
+  repeat (apply impred; intros).
+  apply (pr2 X).
 Defined.
+
 (** Question: does the above proof need both X and Y to be sets? *)
 
 (** * The universe is not a set *)
