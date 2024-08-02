@@ -190,7 +190,19 @@ Abort. (* We will prove this lemma after a long journey. *)
   *
   * Hint: `Search (_ @ _ @ _ = _).` *)
 Lemma loopexp_succ (i : Z) : loopexp (succ i) = loopexp i @ loop.
-Proof. Admitted.
+Proof.
+  destruct i.
+  - reflexivity.
+  - destruct n.
+    + simpl.
+      symmetry.
+      apply pathsinv0l.
+    + simpl.
+      rewrite <- path_assoc.
+      rewrite pathsinv0l.
+      rewrite pathscomp0rid.
+      reflexivity.
+Defined.
 
 (** [Exercise, optional] You can also prove the opposite case,
   * though we will not use this lemma. *)
