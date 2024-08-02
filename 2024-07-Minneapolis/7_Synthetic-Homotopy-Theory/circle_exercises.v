@@ -273,12 +273,48 @@ Proof.
   exact (maponpaths f p).
 Defined.
 
+Lemma invmaponpathsPos_not {n m : nat} : Pos n != Pos m -> n != m.
+Proof.
+  induction n; induction m; intros h ne.
+  - destruct h. reflexivity.
+  - apply (negpaths0sx m). exact ne.
+  - symmetry in ne. apply (negpaths0sx n). exact ne.
+  - destruct h. exact (maponpaths _ ne).
+Qed.
+
+Lemma invmaponpathsPos_not' {n m : nat} : n != m -> Pos n != Pos m.
+Proof.
+  induction n; induction m; intros h ne.
+  - destruct h. reflexivity.
+  - destruct h. apply (invmaponpathsPos ne).
+  - destruct h. apply (invmaponpathsPos ne).
+  - destruct h. apply (invmaponpathsPos ne).
+Qed.
+
 Lemma invmaponpathsNegS {n m : nat} : NegS n = NegS m -> n = m.
 Proof.
   intro p.
   set (f := λ n, match n with NegS n => n | _ => 0 end).
   exact (maponpaths f p).
 Defined.
+
+Lemma invmaponpathsNegS_not {n m : nat} : NegS n != NegS m -> n != m.
+Proof.
+  induction n; induction m; intros h ne.
+  - destruct h. reflexivity.
+  - apply (negpaths0sx m). exact ne.
+  - symmetry in ne. apply (negpaths0sx n). exact ne.
+  - destruct h. exact (maponpaths _ ne).
+Qed.
+
+Lemma invmaponpathsNegS_not' {n m : nat} : n != m -> NegS n != NegS m.
+Proof.
+  induction n; induction m; intros h ne.
+  - destruct h. reflexivity.
+  - destruct h. apply (invmaponpathsNegS ne).
+  - destruct h. apply (invmaponpathsNegS ne).
+  - destruct h. apply (invmaponpathsNegS ne).
+Qed.
 
 Lemma negpathPosNegS {n m : nat} : ¬ (Pos n = NegS m).
 Proof.
@@ -287,9 +323,81 @@ Proof.
   exact (nopathstruetofalse (maponpaths f p)).
 Defined.
 
+Lemma negpathPosNegS' {n m : nat} : ¬ (NegS m = Pos n).
+Proof.
+  intro p.
+  set (f := λ i, match i with NegS _ => true | Pos _ => false end).
+  exact (nopathstruetofalse (maponpaths f p)).
+Defined.
+
 (** [Exercise, difficult] Prove that `Z` has decidable equality. *)
 Theorem isdeceqZ : isdeceq Z.
-Proof. Admitted.
+Proof.
+  unfold isdeceq.
+  intros x.
+  induction x.
+  - induction n.
+    + intros y.
+      induction y.
+      * induction n.
+        -- left. reflexivity.
+        -- right.
+           intros ne.
+           apply (negpaths0sx n).
+           apply (invmaponpathsPos ne).
+      * right. apply negpathPosNegS.
+    + intros y.
+      induction y.
+      * induction n0.
+        -- right.
+           intros ne.
+           symmetry in ne.
+           apply (negpaths0sx n).
+           apply (invmaponpathsPos ne).
+        -- specialize IHn with (Pos n0).
+           case IHn.
+           ++ intros h.
+              left.
+              rewrite (invmaponpathsPos h).
+              reflexivity.
+           ++ intros h.
+              right.
+              apply invmaponpathsPos_not'.
+              apply noeqinjS.
+              apply (invmaponpathsPos_not h).
+      * right. apply negpathPosNegS.
+  - induction n.
+    + intros y.
+      induction y.
+      * right. apply negpathPosNegS'.
+      * induction n.
+        -- left. reflexivity.
+        -- right.
+           intros ne.
+           apply (negpaths0sx n).
+           apply (invmaponpathsNegS ne).
+    + intros y.
+      induction y.
+      * right. apply negpathPosNegS'.
+      * induction n0.
+        -- right. 
+           intros ne.
+           symmetry in ne.
+           apply (negpaths0sx n).
+           apply (invmaponpathsNegS ne).
+       -- specialize IHn with (NegS n0).
+          clear IHn0.
+          case IHn.
+          ++ intros h.
+             left.
+             rewrite (invmaponpathsNegS h).
+             reflexivity.
+          ++ intros h.
+             right.
+             apply invmaponpathsNegS_not'.
+             apply noeqinjS.
+             apply (invmaponpathsNegS_not h).
+Defined.
 
 (** Okay, `Z` is a set. *)
 Theorem isasetZ : isaset Z.
