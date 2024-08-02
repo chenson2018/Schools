@@ -142,15 +142,35 @@ Defined.
 
 (** [Exercise] Another lemma. *)
 Lemma encode'_loop (i : Z) : encode' loop i = succ i.
-Proof. Admitted.
+Proof.
+  exact (loop_transport i).
+Defined.
 
 (** [Exercise] Yet another lemma. *)
 Lemma encode'_invloop (i : Z) : encode' (! loop) i = pred i.
-Proof. Admitted.
+Proof.
+  exact (invloop_transport i).
+Defined.
 
 (** [Exercise, difficult] Putting all these lemmas together... *)
 Lemma encode_loopexp (i : Z) : encode (loopexp i) = i.
-Proof. Admitted.
+Proof.
+  unfold loopexp.
+  induction i.
+  - induction n.
+    + reflexivity.
+    + simpl.
+      rewrite <- encode'_encode.
+      rewrite IHn.
+      apply encode'_loop.
+  - induction n.
+    + simpl.
+      apply encode'_invloop.
+    + simpl.
+      rewrite <- encode'_encode.
+      rewrite IHn.
+      apply encode'_invloop.
+Defined.
 
 (** Now, we wish to prove that `encode` is also the right inverse of
    `loopexp` as follows: *)
