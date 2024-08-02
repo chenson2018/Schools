@@ -115,8 +115,12 @@ Lemma invloop_transport (x : Z) : transportf Cover (! loop) x = pred x.
 Proof.
   etrans.
   - exact (functtransportf Cover (idfun UU) (! loop) x).
-  - admit.
-Admitted.
+  - unfold Cover.
+    rewrite maponpathsinv0.
+    rewrite S1_rec_beta_loop.
+    refine (toforallpaths _ _ _ _ x).
+    apply invweqpath_transport.
+Defined.
 
 (** Now we are ready to define the encoding function.*)
 
@@ -207,7 +211,17 @@ Defined.
 (** [Exercise, optional] You can also prove the opposite case,
   * though we will not use this lemma. *)
 Lemma loopexp_pred (i : Z) : loopexp (pred i) = loopexp i @ ! loop.
-Proof. Admitted.
+Proof.
+  destruct i.
+  - destruct n.
+    + reflexivity.
+    + simpl.
+      rewrite <- path_assoc.
+      rewrite pathsinv0r.
+      rewrite pathscomp0rid.
+      reflexivity.
+  - reflexivity.
+Defined.
 
 (** [Exercise] A very useful lemma that can be proved in 2 tactics. *)
 Lemma transportf_arrow {A : Type} {B C : A -> Type}
@@ -215,6 +229,16 @@ Lemma transportf_arrow {A : Type} {B C : A -> Type}
   : (transportf (λ x, B x -> C x) p f) b'
   = transportf C p (f (transportf B (! p) b')).
 Proof. Admitted.
+
+(* adding this because the snap package doesn't have it... *)
+Definition transportf_to_pathover {X:Type}
+           {x x':X} (p:x=x')
+           {Y : X -> Type} (y : Y x) (y' : Y x')
+  : (transportf _ p y = y') → PathOver p y y'.
+Proof.
+  intro.
+  now induction p.
+Defined.
 
 (** [Exercise, very difficult] This is the generalized `loopexp` that
   * works for all elements of type `Cover x`, not just `Cover base`
