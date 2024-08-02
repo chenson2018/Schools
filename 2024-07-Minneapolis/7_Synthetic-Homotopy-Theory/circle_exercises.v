@@ -31,16 +31,24 @@ Definition succ (i : Z) : Z :=
 
 (** [Exercise] We then define the `pred` function that decrement
   * integers by 1. *)
-Definition pred (i : Z) : Z. (* Change the dot `.` to `:=` *)
-Proof. Admitted.
+Definition pred (i : Z) : Z := 
+  match i with
+  | Pos (S n) => Pos n
+  | Pos 0 => NegS 0
+  | NegS n => NegS (S n)
+  end.
 
 (** [Exercise] `pred` is a left inverse of `succ` *)
 Lemma pred_succ (i : Z) : pred (succ i) = i.
-Proof. Admitted.
+Proof. 
+  case i; intros; case n; reflexivity.
+Qed.
 
 (** [Exercise] `pred` is a right inverse of `succ` *)
 Lemma succ_pred (i : Z) : succ (pred i) = i.
-Proof. Admitted.
+Proof.
+  case i; intros; case n; reflexivity.
+Qed.
 
 (** Therefore, `succ` is an equivalence! *)
 Definition succ_equiv : Z ≃ Z :=
@@ -104,7 +112,11 @@ Defined.
 (** [Exercise] prove that transporting along the inverse of
   * `loop` is the same as applying `pred`. *)
 Lemma invloop_transport (x : Z) : transportf Cover (! loop) x = pred x.
-Proof. Admitted.
+Proof.
+  etrans.
+  - exact (functtransportf Cover (idfun UU) (! loop) x).
+  - admit.
+Admitted.
 
 (** Now we are ready to define the encoding function.*)
 
@@ -122,7 +134,11 @@ Definition encode {x : S1} (p : base = x) : Cover x :=
   * Hint: `Search (transportf _ _ (transportf _ _ _)).` *)
 Lemma encode'_encode (p : base = base) (q : base = base)
   : encode' q (encode p) = encode (p @ q).
-Proof. Admitted.
+Proof. 
+  unfold encode, encode'.
+  rewrite transport_f_f.
+  reflexivity.
+Defined.
 
 (** [Exercise] Another lemma. *)
 Lemma encode'_loop (i : Z) : encode' loop i = succ i.
