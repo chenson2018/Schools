@@ -341,4 +341,11 @@ Proof. Admitted.
 
 (** [Exercise] Prove that `S1` is not a set. *)
 Theorem negisasetS1 : ¬ isaset S1.
-Proof. Admitted.
+Proof.
+  intros h.
+  unfold isaset in h.
+  specialize h with base base.
+  destruct h with loop (idpath base).
+  apply negpathsloopidpath.
+  assumption.
+Qed.
