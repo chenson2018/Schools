@@ -337,7 +337,19 @@ Proof. Admitted.
 
 (** [Exercise] Prove that `loop` is not the constant path. *)
 Lemma negpathsloopidpath : ¬ (loop = idpath base).
-Proof. Admitted.
+Proof.
+  intros h.
+  assert (h' : Pos 1 = Pos 0).
+  {
+    rewrite <- (encode_loopexp (Pos 0)).
+    rewrite <- (encode_loopexp (Pos 1)).
+    simpl.
+    rewrite h.
+    reflexivity.
+  }
+  apply (negpathssx0 0).
+  exact (invmaponpathsPos h').
+Qed.
 
 (** [Exercise] Prove that `S1` is not a set. *)
 Theorem negisasetS1 : ¬ isaset S1.
