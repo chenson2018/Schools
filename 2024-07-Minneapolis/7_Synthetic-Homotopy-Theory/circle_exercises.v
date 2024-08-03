@@ -303,8 +303,8 @@ Proof.
   all : case (isdeceqnat n n'); intros h.
   1, 3 : rewrite h; left; reflexivity.
   all: right; intros ne; destruct h; refine (_ ne).
-  - apply invmaponpathsPos.
-  - apply invmaponpathsNegS.
+  - exact invmaponpathsPos.
+  - exact invmaponpathsNegS.
 Defined.
 
 (** Okay, `Z` is a set. *)
