@@ -228,7 +228,9 @@ Lemma transportf_arrow {A : Type} {B C : A -> Type}
   {x y : A} (p : x = y) (f : B x -> C x) (b' : B y)
   : (transportf (λ x, B x -> C x) p f) b'
   = transportf C p (f (transportf B (! p) b')).
-Proof. Admitted.
+Proof.
+  induction p. reflexivity.
+Defined.
 
 (* adding this because the snap package doesn't have it... *)
 Definition transportf_to_pathover {X:Type}
@@ -248,20 +250,34 @@ Proof.
   refine (S1_ind (λ x, Cover x -> base = x) loopexp _ x).
   apply transportf_to_pathover.
   apply funextsec. intro i.
-  (** [Exercise] Finish the rest of the definition. *)
-Admitted.
+  rewrite transportf_arrow.
+  rewrite transportf_id1.
+  rewrite invloop_transport.
+  rewrite loopexp_pred.
+  rewrite <- path_assoc.
+  rewrite pathsinv0l.
+  rewrite pathscomp0rid.
+  reflexivity.
+Defined.
 
 (** [Exercise] After all the preparation, this is a one-liner. *)
 Lemma decode_encode {x : S1} (p : base = x): (decode (encode p)) = p.
-Proof. Admitted.
+Proof. 
+  induction p. reflexivity. 
+Defined.
 
 (** [Exercise] Finally... *)
 Lemma loopexp_encode (p : base = base): (loopexp (encode p)) = p.
-Proof. Admitted.
+Proof.
+  apply @decode_encode.
+Defined. 
 
 (** [Exercise] We proved it! *)
 Theorem Omega1S1 : (base = base) ≃ Z.
-Proof. Admitted.
+Proof.
+  refine (make_weq encode (isweq_iso encode decode decode_encode _)).
+  exact encode_loopexp.
+Qed.
 
 (** BONUS: We can prove that S1 has h-level 3 but not 2, thanks
   * to the constructions and the theorem we just established. *)
