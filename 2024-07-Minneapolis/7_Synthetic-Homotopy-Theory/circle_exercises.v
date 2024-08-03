@@ -298,52 +298,13 @@ Qed.
 (** [Exercise, difficult] Prove that `Z` has decidable equality. *)
 Theorem isdeceqZ : isdeceq Z.
 Proof.
-  unfold isdeceq.
-  set (@invmaponpathsPos).
-  set (@invmaponpathsNegS).
-  destruct x as [n | n]; induction n as [|n IHn]; intros [n' | n'].
-  1, 6 : 
-      induction n'
-    ; [
-        left; reflexivity 
-        | 
-        right
-        ; intros ne
-        ; apply (negpaths0sx n')
-        ; refine (_ 0 (S n') ne)
-        ; assumption
-      ].
-  1, 3, 4, 5 :
-      right
-    ; try apply negpathPosNegS
-    ; apply ne_symm
-    ; apply negpathPosNegS.
-  all : induction n'.
-  1, 3 :
-      right
-    ; intros ne
-    ; symmetry in ne
-    ; apply (negpaths0sx n)
-    ; refine (_ 0 (S n) ne)
-    ; assumption.
-  1 : specialize IHn with (Pos n').
-  2 : specialize IHn with (NegS n').
-  all : case IHn.
-  1, 3:
-       intros h
-     ; left
-     ; try rewrite (invmaponpathsPos h)
-     ; try rewrite (invmaponpathsNegS h)
-     ; reflexivity.
-  all:
-       intros h
-     ; right
-     ; intros ne
-     ; destruct h
-     ; refine (maponpaths _ _)
-     ; apply invmaponpathsS
-     ; try apply (invmaponpathsPos ne)
-     ; try apply (invmaponpathsNegS ne).
+  intros [n | n] [n' | n'].
+  2, 3: right; intros ne; repeat (try apply (negpathPosNegS ne); symmetry in ne).
+  all : case (isdeceqnat n n'); intros h.
+  1, 3 : rewrite h; left; reflexivity.
+  all: right; intros ne; destruct h; refine (_ ne).
+  - apply invmaponpathsPos.
+  - apply invmaponpathsNegS.
 Defined.
 
 (** Okay, `Z` is a set. *)
