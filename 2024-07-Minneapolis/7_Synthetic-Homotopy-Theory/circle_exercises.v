@@ -303,14 +303,6 @@ Proof.
   exact (nopathstruetofalse (maponpaths f p)).
 Defined.
 
-Lemma ne_symm {X : UU} {x x' : X} : x != x' -> x' != x.
-Proof.
-  intros h ne.
-  rewrite ne in h.
-  destruct h.
-  reflexivity.
-Qed.
-
 (** [Exercise, difficult] Prove that `Z` has decidable equality. *)
 Theorem isdeceqZ : isdeceq Z.
 Proof.
